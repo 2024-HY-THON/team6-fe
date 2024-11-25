@@ -17,12 +17,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.hython6.data.HyThon6Destination
 import com.example.hython6.ui.main.home.HomeScreen
 import com.example.hython6.ui.main.list.ListScreen
 import com.example.hython6.ui.main.mypage.MyPageScreen
+import com.example.hython6.ui.theme.Blue
 import com.example.hython6.ui.theme.HyThon6Theme
+import com.example.hython6.ui.theme.Gray1
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +45,9 @@ fun App() {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
-                BottomAppBar {
+                BottomAppBar (
+                    containerColor = Color.White,
+                ){
                     HyThon6Destination.values().forEach { destination ->
                         val isSelected = destination == currentDestination
                         NavigationBarItem(
@@ -51,16 +57,20 @@ fun App() {
                             },
                             icon = {
                                 Icon(
-                                    imageVector = if (isSelected) {
-                                        destination.icons.selectedIcon
-                                    } else {
-                                        destination.icons.defaultIcon
-                                    },
+                                    painter = painterResource(id = destination.iconRes),
+                                    tint = if(isSelected) {
+                                        Blue
+                                    } else { Gray1 },
                                     contentDescription = destination.label,
                                 )
                             },
                             label = {
-                                Text(text = destination.label)
+                                Text(
+                                    text = destination.label,
+                                    color = if(isSelected) {
+                                        Blue
+                                    } else { Gray1 }
+                                )
                             },
                         )
                     }
