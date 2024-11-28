@@ -1,5 +1,6 @@
 package com.example.hython6.ui.main.list
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,15 +14,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.example.hython6.ui.theme.Gray2
 import com.example.hython6.ui.theme.Purple
+import com.example.hython6.R
 
 @Composable
-fun CategoryCard(category: String) {
+fun CategoryCard(category: String, isEditing: Boolean) {
     Card(
         modifier = Modifier
             .width(160.dp)
@@ -53,11 +56,19 @@ fun CategoryCard(category: String) {
                     .align(Alignment.TopEnd)   // 오른쪽 상단에 배치
                     .padding(8.dp)             // 여백 설정
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Delete",
-                    tint = Purple
-                )
+                if (isEditing) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = "DeleteIcon",
+                        tint = Purple
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_alarm_off),
+                        contentDescription = "AlarmOffIcon",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
 
@@ -67,5 +78,5 @@ fun CategoryCard(category: String) {
 @Preview
 @Composable
 fun PreviewCategoryItem() {
-    CategoryCard(category = "Category A")
+    CategoryCard(category = "Category A", true)
 }

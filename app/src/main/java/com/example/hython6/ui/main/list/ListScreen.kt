@@ -47,7 +47,7 @@ import com.example.hython6.ui.theme.White
 @Composable
 fun ListScreen() {
     val interactionSource = remember { MutableInteractionSource() }
-    var isEditing by remember { mutableStateOf(true) }
+    var isEditing by remember { mutableStateOf(false) }
 
     Scaffold (
         topBar = {
@@ -66,7 +66,7 @@ fun ListScreen() {
                         .fillMaxWidth()
                 ){
                     Text(
-                        text = if (isEditing) "목록 편집" else "확인",
+                        text = if (isEditing) "확인" else "목록 편집",
                         style = TextStyle(
                             fontSize = 15.sp,
                             fontWeight = FontWeight(600),
@@ -92,7 +92,10 @@ fun ListScreen() {
                     ),
                 ) {
                     items(15) { index ->    // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                        CategoryCard(category = "Category $index")
+                        CategoryCard(
+                            category = "Category $index",
+                            isEditing = isEditing,
+                        )
                     }
                 }
 
