@@ -134,10 +134,11 @@ fun SearchBar() {
                         end = 15.dp,
                     )
                     .background(White, shape = RoundedCornerShape(8.dp))
-                    .border(1.dp, Gray2, shape = RoundedCornerShape(8.dp)), // 검은색 테두리,
+                    .border(1.dp, Gray2, shape = RoundedCornerShape(8.dp)),
                 singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = White,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = White,
+                    unfocusedContainerColor = White,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                 ),
