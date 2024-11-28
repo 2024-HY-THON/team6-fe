@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.hython6.ui.theme.Blue
 import com.example.hython6.ui.theme.Gray2
 import com.example.hython6.ui.theme.White
 
@@ -83,6 +88,19 @@ fun SearchBar() {
                     unfocusedIndicatorColor = Color.Transparent,
                 ),
                 textStyle = TextStyle(fontSize = 15.sp),
+                trailingIcon = {
+                    IconButton(
+                        modifier = Modifier.padding(end = 3.dp),
+                        onClick = { /*TODO*/ },
+                    ){
+                        // 검색 아이콘
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search",
+                            tint = Blue
+                        )
+                    }
+                }
             )
         },
     )
