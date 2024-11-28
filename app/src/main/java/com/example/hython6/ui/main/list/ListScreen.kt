@@ -3,6 +3,9 @@ package com.example.hython6.ui.main.list
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +45,8 @@ import com.example.hython6.ui.theme.White
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ListScreen() {
+    var isEditing by remember { mutableStateOf(true) }
+
     Scaffold (
         topBar = {
         },
@@ -51,6 +57,24 @@ fun ListScreen() {
             ){
                 // 검색바
                 SearchBar()
+
+                // 카테고리 편집 버튼
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    Text(
+                        text = if (isEditing) "목록 편집" else "확인",
+                        style = TextStyle(
+                            fontSize = 15.sp,
+                            color = Color.Black,
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .clickable { isEditing = !isEditing }
+                            .padding(end = 20.dp)
+                    )
+                }
 
                 // 카테고리 리스트
                 LazyVerticalGrid(
@@ -78,7 +102,11 @@ fun SearchBar() {
 
     TopAppBar(
         modifier = Modifier
-            .height(120.dp),
+            .height(110.dp)
+            .padding(
+                top = 30.dp,
+                end = 5.dp,
+            ),
         title = {
             TextField(
                 value = searchText,
@@ -91,10 +119,9 @@ fun SearchBar() {
                 },
                 modifier = Modifier
                     .width(355.dp)
-                    .height(85.dp)
-                    .fillMaxWidth()
+                    .height(70.dp)
                     .padding(
-                        top = 30.dp,
+                        top = 10.dp,
                         end = 15.dp,
                     )
                     .background(White, shape = RoundedCornerShape(8.dp))
