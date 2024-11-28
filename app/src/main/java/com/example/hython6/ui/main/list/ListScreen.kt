@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hython6.ui.theme.Blue
@@ -45,6 +46,7 @@ import com.example.hython6.ui.theme.White
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ListScreen() {
+    val interactionSource = remember { MutableInteractionSource() }
     var isEditing by remember { mutableStateOf(true) }
 
     Scaffold (
@@ -67,11 +69,15 @@ fun ListScreen() {
                         text = if (isEditing) "목록 편집" else "확인",
                         style = TextStyle(
                             fontSize = 15.sp,
+                            fontWeight = FontWeight(600),
                             color = Color.Black,
                         ),
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .clickable { isEditing = !isEditing }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
+                            ) { isEditing = !isEditing }
                             .padding(end = 20.dp)
                     )
                 }
