@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168118703206",
+    "project_id": "habitapp-894ce",
+    "storage_bucket": "habitapp-894ce.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168118703206:android:bcd8df25309237e50d49a7",
+        "android_client_info": {
+          "package_name": "com.example.hython6"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuMhS_3XmBBMTCH651E5w5wotFPcByxCg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

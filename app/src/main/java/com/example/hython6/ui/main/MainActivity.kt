@@ -1,6 +1,7 @@
 package com.example.hython6.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,12 +28,25 @@ import com.example.hython6.ui.theme.Blue
 import com.example.hython6.ui.theme.HyThon6Theme
 import com.example.hython6.ui.theme.Gray1
 import com.example.hython6.ui.theme.White
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             App()
+        }
+        fetchFCMToken()
+    }
+
+    private fun fetchFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Log.d("FCM Token", "Token: $token")
+            } else {
+                Log.w("FCM Token", "Fetching FCM registration token failed", task.exception)
+            }
         }
     }
 }
