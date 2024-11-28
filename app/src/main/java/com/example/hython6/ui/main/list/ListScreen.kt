@@ -1,6 +1,8 @@
 package com.example.hython6.ui.main.list
 
 import android.annotation.SuppressLint
+import android.view.ViewTreeObserver
+import android.view.WindowInsets
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +30,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +39,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,6 +54,11 @@ import com.example.hython6.ui.theme.White
 fun ListScreen() {
     val interactionSource = remember { MutableInteractionSource() }
     var isEditing by remember { mutableStateOf(false) }
+
+    var isKeyboardVisible = remember {  // 키보드 상태 변수
+        mutableStateOf(false)
+    }
+    keyBoardVisible(isKeyboardVisible)
 
     Scaffold (
         topBar = {
@@ -83,25 +94,48 @@ fun ListScreen() {
                 }
 
                 // 카테고리 리스트
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        horizontal = 15.dp,
-                        vertical = 8.dp
-                    ),
-                ) {
-                    items(15) { index ->    // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                        CategoryCard(
-                            category = "Category $index",
-                            isEditing = isEditing,
-                        )
+                // 키보드가 열려있으면 LazyVerticalGrid를 숨김
+                if (!isKeyboardVisible.value) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            horizontal = 15.dp,
+                            vertical = 8.dp
+                        ),
+                    ) {
+                        items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
+                            CategoryCard(
+                                category = "Category $index",
+                                isEditing = isEditing,
+                            )
+                        }
                     }
                 }
 
             }
         }
     )
+}
+
+@Composable
+fun keyBoardVisible(isKeyboardVisible: MutableState<Boolean>){
+    val context = LocalContext.current
+    val rootView = LocalView.current
+
+    // 키보드의 가시성 확인
+    DisposableEffect(context) {
+        val callback = ViewTreeObserver.OnPreDrawListener {
+            val insets = rootView.rootWindowInsets
+            isKeyboardVisible.value = insets.isVisible(WindowInsets.Type.ime()) //  키보드 가시성 체크
+            true
+        }
+        rootView.viewTreeObserver.addOnPreDrawListener(callback)
+
+        onDispose {
+            rootView.viewTreeObserver.removeOnPreDrawListener(callback)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
