@@ -3,6 +3,7 @@ package com.example.hython6.ui.main.list
 import android.annotation.SuppressLint
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +58,7 @@ import com.example.hython6.ui.theme.White
 fun ListScreen() {
     val interactionSource = remember { MutableInteractionSource() }
     var isEditing by remember { mutableStateOf(false) }
+    var showMode by remember { mutableIntStateOf(1) }   // 1: 카테고리, 2: 검색 결과
 
     var isKeyboardVisible = remember {  // 키보드 상태 변수
         mutableStateOf(false)
@@ -69,7 +74,9 @@ fun ListScreen() {
                     .fillMaxSize(),
             ){
                 // 검색바
-                SearchBar()
+                SearchBar(showMode) { newShowMode ->
+                    showMode = newShowMode // showMode 값 변경
+                }
 
                 // 카테고리 편집 버튼
                 Box(
@@ -93,9 +100,8 @@ fun ListScreen() {
                     )
                 }
 
-                // 카테고리 리스트
-                // 키보드가 열려있으면 LazyVerticalGrid를 숨김
-                if (!isKeyboardVisible.value) {
+                if (showMode == 1) {
+                    // 카테고리 리스트
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         modifier = Modifier.fillMaxSize(),
@@ -112,6 +118,7 @@ fun ListScreen() {
                         }
                     }
                 } else {
+                    // 검색 결과 리스트
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(1),
                         modifier = Modifier.fillMaxSize(),
@@ -153,8 +160,9 @@ fun keyBoardVisible(isKeyboardVisible: MutableState<Boolean>){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar() {
+fun SearchBar(showMode: Int, onShowModeChange: (Int) -> Unit) {
     var searchText by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     TopAppBar(
         modifier = Modifier
@@ -193,7 +201,10 @@ fun SearchBar() {
                 trailingIcon = {
                     IconButton(
                         modifier = Modifier.padding(end = 3.dp),
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            onShowModeChange(2)
+                            keyboardController?.hide()
+                        },
                     ){
                         // 검색 아이콘
                         Icon(
@@ -202,8 +213,20 @@ fun SearchBar() {
                             tint = Blue
                         )
                     }
-                }
+                },
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // 키보드 Enter 키 눌렸을 때(검색 요청)
+                        onShowModeChange(2)
+                        keyboardController?.hide()
+                    }
+                ),
             )
         },
     )
+
+    if(showMode == 2)
+        BackHandler {
+            onShowModeChange(1)
+        }
 }
