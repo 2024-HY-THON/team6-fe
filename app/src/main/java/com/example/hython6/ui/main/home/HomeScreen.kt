@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.hython6.R
-import com.example.hython6.data.SummaryResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -41,13 +40,15 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
     var completedCount by remember { mutableStateOf(0) }
     var notCompletedCount by remember { mutableStateOf(0) }
     val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+    val userId = sharedPreferences.getString("userId", "") ?: ""
     val serverUrl = stringResource(id = R.string.server_url)
 
     LaunchedEffect(Unit) {
         appBarTitleSetter("안해도 돼")
 
         try {
-            val url = URL("$serverUrl/category/main/test1")
+            val url = URL("$serverUrl/category/main/$userId")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
             connection.connect()
