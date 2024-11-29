@@ -116,8 +116,11 @@ fun DetailScreen(categoryName: String?) {
                     ),
                     verticalArrangement = Arrangement.spacedBy(10.dp) //아이템 간 상하 간격
                 ) {
-                    items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                        RecommendationCard("recommend $index")
+                    items(15 + 1) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
+                        if(index < 15)
+                            RecommendationCard("recommend $index")
+                        else
+                            RecommendationCard(recommend = "+")
                     }
                 }
             }
