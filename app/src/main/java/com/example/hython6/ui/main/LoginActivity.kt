@@ -66,7 +66,9 @@ fun LoginScreen() {
             Button(
                 onClick = {
                     requestLogin(context, serverUrl, userId, password)
-                    val intent = Intent(context, MainActivity::class.java)
+                    val intent = Intent(context, MainActivity::class.java).apply{
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                     context.startActivity(intent)
                     with(sharedPreferences.edit()) {
                         putString("userId", userId)
