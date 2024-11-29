@@ -64,6 +64,7 @@ fun ListScreen() {
     val interactionSource = remember { MutableInteractionSource() }
     var isEditing by remember { mutableStateOf(false) }
     var showMode by remember { mutableIntStateOf(1) }   // 1: 카테고리, 2: 검색 결과
+    var clickedItem by remember { mutableStateOf("") }
 
     var isKeyboardVisible = remember {  // 키보드 상태 변수
         mutableStateOf(false)
@@ -121,7 +122,10 @@ fun ListScreen() {
                                     CategoryCard(
                                         category = "Category $index",
                                         isEditing = isEditing,
-                                        navController
+                                        navController,
+                                        onClick = { clickedCategory ->
+                                            clickedItem = clickedCategory
+                                        }
                                     )
                                 }
                             }
@@ -143,7 +147,7 @@ fun ListScreen() {
 
                     }
                 }
-                composable("detail") { DetailScreen(categoryName = "진입!") }
+                composable("detail") { DetailScreen(categoryName = clickedItem) }
             }
 
         }

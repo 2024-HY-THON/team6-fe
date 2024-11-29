@@ -29,14 +29,18 @@ import com.example.hython6.R
 fun CategoryCard(
     category: String,
     isEditing: Boolean,
-    navController: NavController
+    navController: NavController,
+    onClick: (String) -> Unit,
 ) {
     Card(
         modifier = Modifier
             .width(160.dp)
             .height(160.dp)
             .fillMaxWidth()
-            .clickable { navController.navigate("detail") }
+            .clickable {
+                navController.navigate("detail")
+                onClick(category)
+            }
             .padding(vertical = 4.dp, horizontal = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = Gray2,         // 카드 배경색
