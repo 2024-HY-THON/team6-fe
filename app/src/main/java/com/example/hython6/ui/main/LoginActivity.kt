@@ -1,7 +1,11 @@
 package com.example.hython6.ui.main
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -12,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -20,6 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hython6.R
 import com.example.hython6.ui.theme.HyThon6Theme
+import org.json.JSONObject
+import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,10 +45,10 @@ class LoginActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen() {
-    var nickname by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val serverUrl = stringResource(id = R.string.server_url)
 
     Scaffold(
         topBar = {
@@ -55,6 +64,7 @@ fun LoginScreen() {
         bottomBar = {
             Button(
                 onClick = {
+                    requestLogin(context, serverUrl, userId, password)
                     val intent = Intent(context, MainActivity::class.java)
                     context.startActivity(intent)
                 },
@@ -101,6 +111,46 @@ fun LoginScreen() {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
+        }
+    }
+}
+fun requestLogin(context: Context, serverUrl: String, userId: String, password: String) {
+    val policy = ThreadPolicy.Builder().permitAll().build()
+    StrictMode.setThreadPolicy(policy)
+    val loginUrl = URL("$serverUrl/user/token/")
+    val jsonInputString = JSONObject().apply {
+        put("id", userId)
+        put("password", password)
+    }.toString()
+
+    with(loginUrl.openConnection() as HttpURLConnection) {
+        requestMethod = "POST"
+        setRequestProperty("Content-Type", "application/json; utf-8")
+        setRequestProperty("Accept", "application/json")
+        doOutput = true
+
+        outputStream.use { os: OutputStream ->
+            val input = jsonInputString.toByteArray()
+            os.write(input, 0, input.size)
+        }
+
+        inputStream.bufferedReader().use {
+            val response = StringBuilder()
+            var inputLine = it.readLine()
+            while (inputLine != null) {
+                response.append(inputLine)
+                inputLine = it.readLine()
+            }
+            println("Response: $response")
+
+            val jsonResponse = JSONObject(response.toString())
+            val accessToken = jsonResponse.getString("access")
+
+            val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putString("userToken", accessToken)
+                apply()
+            }
         }
     }
 }
