@@ -1,5 +1,6 @@
 package com.example.hython6.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,6 +39,7 @@ fun LoginScreen() {
     var nickname by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -51,7 +54,10 @@ fun LoginScreen() {
         },
         bottomBar = {
             Button(
-                onClick = { /* Handle login */ },
+                onClick = {
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
