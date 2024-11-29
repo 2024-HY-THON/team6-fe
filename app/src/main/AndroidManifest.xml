@@ -22,6 +22,7 @@
             </intent-filter>
         </service>
         <activity android:name=".ui.main.LoginActivity" />
+        <activity android:name=".ui.main.MainActivity" />
         <activity
             android:name=".ui.main.StartActivity"
             android:exported="true"
