@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.hython6.ui.main.mypage.AccountSetting
+import com.example.hython6.ui.main.mypage.EditAccount
 import com.example.hython6.ui.main.mypage.HowTo
 import com.example.hython6.ui.main.mypage.NotificationSetting
 
@@ -88,7 +89,8 @@ fun MyPageScreen(appBarTitleSetter: (String) -> Unit) {
                     }
                 }
                 composable("notification_setting") { NotificationSetting() }
-                composable("account_setting") { AccountSetting() }
+                composable("account_setting") { AccountSetting(navController, appBarTitleSetter) }
+                composable("edit_account") { EditAccount() }
                 composable("how_to") { HowTo() }
             }
         }
