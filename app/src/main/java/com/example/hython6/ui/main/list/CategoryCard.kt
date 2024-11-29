@@ -1,6 +1,7 @@
 package com.example.hython6.ui.main.list
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,17 +20,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.hython6.ui.theme.Gray2
 import com.example.hython6.ui.theme.Purple
 import com.example.hython6.R
 
 @Composable
-fun CategoryCard(category: String, isEditing: Boolean) {
+fun CategoryCard(
+    category: String,
+    isEditing: Boolean,
+    navController: NavController
+) {
     Card(
         modifier = Modifier
             .width(160.dp)
             .height(160.dp)
             .fillMaxWidth()
+            .clickable { navController.navigate("detail") }
             .padding(vertical = 4.dp, horizontal = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = Gray2,         // 카드 배경색
@@ -75,8 +82,3 @@ fun CategoryCard(category: String, isEditing: Boolean) {
     }
 }
 
-@Preview
-@Composable
-fun PreviewCategoryItem() {
-    CategoryCard(category = "Category A", true)
-}

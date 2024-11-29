@@ -50,6 +50,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.hython6.ui.theme.Blue
 import com.example.hython6.ui.theme.Gray2
 import com.example.hython6.ui.theme.White
@@ -57,6 +60,7 @@ import com.example.hython6.ui.theme.White
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ListScreen() {
+    val navController = rememberNavController()
     val interactionSource = remember { MutableInteractionSource() }
     var isEditing by remember { mutableStateOf(false) }
     var showMode by remember { mutableIntStateOf(1) }   // 1: 카테고리, 2: 검색 결과
@@ -70,71 +74,78 @@ fun ListScreen() {
         topBar = {
         },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-            ){
-                // 검색바
-                SearchBar(showMode) { newShowMode ->
-                    showMode = newShowMode // showMode 값 변경
-                }
-
-                // 카테고리 편집 버튼
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ){
-                    Text(
-                        text = if (isEditing) "확인" else "목록 편집",
-                        style = TextStyle(
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight(600),
-                            color = Color.Black,
-                        ),
+            NavHost(navController, startDestination = "list"){
+                composable("list"){
+                    Column(
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                            ) { isEditing = !isEditing }
-                            .padding(end = 20.dp)
-                    )
-                }
+                            .fillMaxSize(),
+                    ){
+                        // 검색바
+                        SearchBar(showMode) { newShowMode ->
+                            showMode = newShowMode // showMode 값 변경
+                        }
 
-                if (showMode == 1) {
-                    // 카테고리 리스트
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            horizontal = 15.dp,
-                            vertical = 8.dp
-                        ),
-                    ) {
-                        items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                            CategoryCard(
-                                category = "Category $index",
-                                isEditing = isEditing,
+                        // 카테고리 편집 버튼
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ){
+                            Text(
+                                text = if (isEditing) "확인" else "목록 편집",
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight(600),
+                                    color = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .clickable(
+                                        interactionSource = interactionSource,
+                                        indication = null,
+                                    ) { isEditing = !isEditing }
+                                    .padding(end = 20.dp)
                             )
                         }
-                    }
-                } else {
-                    // 검색 결과 리스트
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            horizontal = 15.dp,
-                            vertical = 8.dp
-                        ),
-                    ) {
-                        items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                            SearchResCard("검색결과 $index", "사용자 $index")
+
+                        if (showMode == 1) {
+                            // 카테고리 리스트
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    horizontal = 15.dp,
+                                    vertical = 8.dp
+                                ),
+                            ) {
+                                items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
+                                    CategoryCard(
+                                        category = "Category $index",
+                                        isEditing = isEditing,
+                                        navController
+                                    )
+                                }
+                            }
+                        } else {
+                            // 검색 결과 리스트
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(1),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    horizontal = 15.dp,
+                                    vertical = 8.dp
+                                ),
+                            ) {
+                                items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
+                                    SearchResCard("검색결과 $index", "사용자 $index")
+                                }
+                            }
                         }
+
                     }
                 }
-
+                composable("detail") { DetailScreen(categoryName = "진입!") }
             }
+
         }
     )
 }
