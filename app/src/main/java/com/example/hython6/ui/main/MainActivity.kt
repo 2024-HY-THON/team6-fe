@@ -1,6 +1,8 @@
 package com.example.hython6.ui.main
 
 import MyPageScreen
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -50,6 +52,7 @@ class MainActivity : ComponentActivity() {
             App()
         }
         fetchFCMToken()
+        logUserToken()
     }
 
     private fun fetchFCMToken() {
@@ -61,6 +64,12 @@ class MainActivity : ComponentActivity() {
                 Log.w("FCM Token", "Fetching FCM registration token failed", task.exception)
             }
         }
+    }
+
+    private fun logUserToken() {
+        val sharedPreferences: SharedPreferences = getSharedPreferences("user_info", Context.MODE_PRIVATE)
+        val userToken = sharedPreferences.getString("userToken", null)
+        Log.d("User Token", "Token: $userToken")
     }
 }
 
