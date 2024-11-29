@@ -111,6 +111,19 @@ fun ListScreen() {
                             )
                         }
                     }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(1),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            horizontal = 15.dp,
+                            vertical = 8.dp
+                        ),
+                    ) {
+                        items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
+                            SearchResCard("검색결과 $index", "사용자 $index")
+                        }
+                    }
                 }
 
             }
