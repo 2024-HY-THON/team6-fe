@@ -188,7 +188,7 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                             .clickable {
                                 coroutineScope.launch {
                                     imageRes = R.drawable.ham_good
-                                    delay(2000)
+                                    delay(1000)
                                     imageRes = R.drawable.ham_default
                                 }
                             },
@@ -213,7 +213,7 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                             .clickable {
                                 coroutineScope.launch {
                                     imageRes = R.drawable.ham_good
-                                    delay(2000)
+                                    delay(1000)
                                     imageRes = R.drawable.ham_default
                                 }
                             },
