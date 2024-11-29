@@ -1,6 +1,7 @@
 package com.example.hython6.ui.main.list
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import androidx.activity.compose.BackHandler
@@ -145,15 +146,34 @@ fun keyBoardVisible(isKeyboardVisible: MutableState<Boolean>){
 
     // 키보드의 가시성 확인
     DisposableEffect(context) {
-        val callback = ViewTreeObserver.OnPreDrawListener {
-            val insets = rootView.rootWindowInsets
-            isKeyboardVisible.value = insets.isVisible(WindowInsets.Type.ime()) //  키보드 가시성 체크
-            true
+        val callback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ViewTreeObserver.OnPreDrawListener {
+                val insets = rootView.rootWindowInsets
+                isKeyboardVisible.value = insets.isVisible(WindowInsets.Type.ime())
+                true
+            }
+        } else {
+            ViewTreeObserver.OnGlobalLayoutListener {
+                val rect = android.graphics.Rect()
+                rootView.getWindowVisibleDisplayFrame(rect)
+                val screenHeight = rootView.height
+                val keypadHeight = screenHeight - rect.bottom
+                isKeyboardVisible.value = keypadHeight > screenHeight * 0.15
+            }
         }
-        rootView.viewTreeObserver.addOnPreDrawListener(callback)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            rootView.viewTreeObserver.addOnPreDrawListener(callback as ViewTreeObserver.OnPreDrawListener)
+        } else {
+            rootView.viewTreeObserver.addOnGlobalLayoutListener(callback as ViewTreeObserver.OnGlobalLayoutListener)
+        }
 
         onDispose {
-            rootView.viewTreeObserver.removeOnPreDrawListener(callback)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                rootView.viewTreeObserver.removeOnPreDrawListener(callback as ViewTreeObserver.OnPreDrawListener)
+            } else {
+                rootView.viewTreeObserver.removeOnGlobalLayoutListener(callback as ViewTreeObserver.OnGlobalLayoutListener)
+            }
         }
     }
 }
