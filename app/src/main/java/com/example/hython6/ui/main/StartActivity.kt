@@ -52,7 +52,10 @@ class StartActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Button(onClick = { /* TODO: Handle sign-up */ }) {
+                        Button(onClick = {
+                            val intent = Intent(this@StartActivity, SignUpActivity::class.java)
+                            startActivity(intent)
+                        }) {
                             Text(text = "회원가입", fontSize = 16.sp)
                         }
                         Button(onClick = {
