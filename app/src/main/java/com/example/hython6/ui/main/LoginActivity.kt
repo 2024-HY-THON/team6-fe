@@ -45,9 +45,10 @@ class LoginActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen() {
-    var userId by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+    var userId by remember { mutableStateOf(sharedPreferences.getString("userId", "") ?: "") }
+    var password by remember { mutableStateOf(sharedPreferences.getString("userPw", "") ?: "") }
     val serverUrl = stringResource(id = R.string.server_url)
 
     Scaffold(
@@ -67,6 +68,11 @@ fun LoginScreen() {
                     requestLogin(context, serverUrl, userId, password)
                     val intent = Intent(context, MainActivity::class.java)
                     context.startActivity(intent)
+                    with(sharedPreferences.edit()) {
+                        putString("userId", userId)
+                        putString("userPw", password)
+                        apply()
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,6 +120,7 @@ fun LoginScreen() {
         }
     }
 }
+
 fun requestLogin(context: Context, serverUrl: String, userId: String, password: String) {
     val policy = ThreadPolicy.Builder().permitAll().build()
     StrictMode.setThreadPolicy(policy)
