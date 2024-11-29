@@ -22,7 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -110,6 +113,57 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                             )
                             Spacer(modifier = Modifier.weight(1f))
                         }
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top=12.dp)
+                    ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(37.dp)
+                            .background(
+                                color = Color(0xFF5348E5),
+                                shape = RoundedCornerShape(
+                                    topStart = 20.dp,
+                                    topEnd = 20.dp,
+                                    bottomStart = 0.dp,
+                                    bottomEnd = 0.dp
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "건강 관리",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                lineHeight = 40.sp,
+                                fontWeight = FontWeight(500),
+                                color = Color(0xFFFFFFFF),
+                            )
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(287.dp)
+                            .background(
+                                color = Color(0xFFFFFFFF),
+                                shape = RoundedCornerShape(
+                                    bottomStart = 20.dp,
+                                    bottomEnd = 20.dp
+                                )
+                            )
+                            .border(
+                                width = 0.8.dp,
+                                color = Color(0xFFDCDBDB),
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("건강 관리")
                     }
                 }
             }
