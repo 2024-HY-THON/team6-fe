@@ -16,15 +16,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.hython6.R
+import com.example.hython6.data.SummaryResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import java.net.HttpURLConnection
+import java.net.URL
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -32,6 +38,32 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     var imageRes by remember { mutableStateOf(R.drawable.ham_default) }
     val coroutineScope = rememberCoroutineScope()
+    var completedCount by remember { mutableStateOf(0) }
+    var notCompletedCount by remember { mutableStateOf(0) }
+    val context = LocalContext.current
+    val serverUrl = stringResource(id = R.string.server_url)
+
+    LaunchedEffect(Unit) {
+        appBarTitleSetter("안해도 돼")
+
+        try {
+            val url = URL("$serverUrl/category/main/test1")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connect()
+
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val response = connection.inputStream.bufferedReader().use { it.readText() }
+                val jsonArray = JSONArray(response)
+                val summary = jsonArray.getJSONObject(jsonArray.length() - 1)
+                completedCount = summary.getInt("completed_count")
+                notCompletedCount = summary.getInt("not_completed_count")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     Scaffold {
         Surface(
@@ -39,9 +71,6 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                 .fillMaxSize(),
             color = Color.White,
         ) {
-            LaunchedEffect(Unit) {
-                appBarTitleSetter("안해도 돼")
-            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,7 +107,7 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = "0개!",
+                                text = "${completedCount}개!",
                                 fontSize = 16.sp,
                                 color = Color.Black
                             )
@@ -108,7 +137,7 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = "0개!",
+                                text = "${notCompletedCount}개!",
                                 fontSize = 16.sp,
                                 color = Color.Black
                             )
