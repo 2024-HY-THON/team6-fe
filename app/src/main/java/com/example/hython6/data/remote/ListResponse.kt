@@ -7,12 +7,12 @@ data class ListResponse(
 )
 
 data class CategoryResponse(
-    val categoryId: Int,
+    val category_id: Int,
     val user: String,
     val category: String,
     val choose: Boolean,
-    val alarmTime: String?,
-    val randomHabit: Long?
+    val alarm_time: String?,
+    val random_habit: Long?
 )
 
 data class DetailResponse(

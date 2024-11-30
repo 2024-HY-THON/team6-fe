@@ -142,7 +142,7 @@ fun ListScreen() {
                                     items(categoryList.size) { index ->
                                         val category = categoryList[index]
                                         CategoryCard(
-                                            categoryId = category.categoryId,
+                                            categoryId = category.category_id,
                                             categoryName = category.category, // 서버에서 받은 category 값
                                             alarm = category.choose, // 서버에서 받은 choose 값
                                             isEditing = isEditing,
