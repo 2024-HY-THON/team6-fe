@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hython6.R
+import com.example.hython6.ui.theme.Blue
 import com.example.hython6.ui.theme.HyThon6Theme
 
 class StartActivity : ComponentActivity() {
@@ -52,13 +54,37 @@ class StartActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Button(onClick = {
+                        Button(
+                            modifier = Modifier
+                                .padding(
+                                    start = 30.dp,
+                                    end = 30.dp
+                                )
+                                .height(50.dp)
+                                .fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black
+                            ),
+                            onClick = {
                             val intent = Intent(this@StartActivity, SignUpActivity::class.java)
                             startActivity(intent)
                         }) {
-                            Text(text = "회원가입", fontSize = 16.sp)
+                            Text(text = "회원가입", fontSize = 16.sp, color = Color.Black)
                         }
-                        Button(onClick = {
+                        Button(
+                            modifier = Modifier
+                                .padding(
+                                    start = 30.dp,
+                                    end = 30.dp
+                                )
+                                .height(50.dp)
+                                .fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black
+                            ),
+                            onClick = {
                             val intent = Intent(this@StartActivity, LoginActivity::class.java)
                             startActivity(intent)
                         }) {
