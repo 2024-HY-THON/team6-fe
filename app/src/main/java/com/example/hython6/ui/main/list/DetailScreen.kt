@@ -140,20 +140,21 @@ fun DetailScreen(categoryId: Int, categoryName: String?) {
                     ),
                     verticalArrangement = Arrangement.spacedBy(10.dp) //아이템 간 상하 간격
                 ) {
-                    habits?.let { list ->
-                        items(list.size + 1) { index -> // habits 리스트 크기와 추가 버튼
-                            if (index < list.size)
-                                RecommendationCard(recommend = list[index]) // habits의 아이템 사용
-                            else
-                                RecommendationCard(recommend = "+") // 추가 버튼
+                    when (val nonNullHabits = habits) {
+                        null -> {
+                            item { RecommendationCard(recommend = "+") }
                         }
-                    } ?: run {
-                        // habits가 null인 경우 보여줄 내용을 작성
-                        items(1) {
-                            Text("No data available", Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                        else -> {
+                            items(nonNullHabits.size + 1) { index ->
+                                if (index < nonNullHabits.size)
+                                    RecommendationCard(recommend = nonNullHabits[index])
+                                else
+                                    RecommendationCard(recommend = "+")
+                            }
                         }
                     }
                 }
+
             }
         }
     )
