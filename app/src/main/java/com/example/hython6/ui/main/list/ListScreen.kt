@@ -139,22 +139,26 @@ fun ListScreen() {
                                 ),
                             ) {
                                 categories?.let { categoryList ->
-                                    items(categoryList.size) { index ->
-                                        val category = categoryList[index]
-                                        CategoryCard(
-                                            categoryId = category.category_id,
-                                            categoryName = category.category, // 서버에서 받은 category 값
-                                            alarm = category.choose, // 서버에서 받은 choose 값
-                                            isEditing = isEditing,
-                                            navController,
-                                            onClick = { clickedId, clickedCategory ->
-                                                Log.d("Category", "Clicked ID: $clickedId, Clicked Name: $clickedCategory")
-                                                selectedId = clickedId
-                                                selectedName = clickedCategory
-                                                Log.d("Category", "selectedId: $selectedId")
-                                                Log.d("Category", "selectedName: $selectedName")
-                                            }
-                                        )
+                                    items(categoryList.size + 1) { index ->
+                                        if (index < categoryList.size) {
+                                            val category = categoryList[index]
+                                            CategoryCard(
+                                                categoryId = category.category_id,
+                                                categoryName = category.category, // 서버에서 받은 category 값
+                                                alarm = category.choose, // 서버에서 받은 choose 값
+                                                isEditing = isEditing,
+                                                navController,
+                                                onClick = { clickedId, clickedCategory ->
+                                                    Log.d("Category", "Clicked ID: $clickedId, Clicked Name: $clickedCategory")
+                                                    selectedId = clickedId
+                                                    selectedName = clickedCategory
+                                                    Log.d("Category", "selectedId: $selectedId")
+                                                    Log.d("Category", "selectedName: $selectedName")
+                                                }
+                                            )
+                                        } else {
+                                            AddCategoryCard()
+                                        }
                                     }
                                 }
                             }
