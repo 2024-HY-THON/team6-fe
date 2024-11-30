@@ -9,15 +9,18 @@ import android.os.StrictMode.ThreadPolicy
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +49,7 @@ class SignUpActivity : ComponentActivity() {
 @Composable
 fun SignUpScreen() {
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     var userId by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -108,7 +112,16 @@ fun SignUpScreen() {
             TextField(
                 value = userId,
                 onValueChange = { userId = it },
-                modifier = Modifier.fillMaxWidth()
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done // 'Done'으로 설정하여 완료 시 키보드 숨기기
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -121,7 +134,16 @@ fun SignUpScreen() {
             TextField(
                 value = email,
                 onValueChange = { email = it },
-                modifier = Modifier.fillMaxWidth()
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done // 'Done'으로 설정하여 완료 시 키보드 숨기기
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -134,7 +156,16 @@ fun SignUpScreen() {
             TextField(
                 value = nickname,
                 onValueChange = { nickname = it },
-                modifier = Modifier.fillMaxWidth()
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done // 'Done'으로 설정하여 완료 시 키보드 숨기기
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -148,8 +179,16 @@ fun SignUpScreen() {
                 value = password,
                 onValueChange = { password = it },
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth()
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done // 'Done'으로 설정하여 완료 시 키보드 숨기기
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
             )
         }
     }
