@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +28,8 @@ import com.example.hython6.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -49,46 +50,25 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
         appBarTitleSetter("안해도 돼")
 
         try {
-            // val url = URL("$serverUrl/category/main/$userId")
-            // val connection = url.openConnection() as HttpURLConnection
-            // connection.requestMethod = "GET"
-            // connection.connect()
+            val url = URL("$serverUrl/category/random/habit/$userId")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
 
-            // val responseCode = connection.responseCode
-            // if (responseCode == HttpURLConnection.HTTP_OK) {
-            //     val response = connection.inputStream.bufferedReader().use { it.readText() }
-            //     val jsonObject = JSONObject(response)
-            //     val habit = jsonObject.getJSONObject("habit")
-            //     val count = jsonObject.getJSONObject("count")
+            val sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+            val userToken = sharedPreferences.getString("userToken", "") ?: ""
 
-            //     category = habit.getString("category")
-            //     contents = habit.getString("contents")
-            //     completedCount = count.getInt("completed_count")
-            //     notCompletedCount = count.getInt("not_completed_count")
-            // }
+            connection.setRequestProperty("Authorization", "Bearer $userToken")
+            connection.connect()
 
-            // Dummy JSON data
-            val dummyJson = """
-                {
-                    "habit": {
-                        "category": "운동",
-                        "contents": "푸시업 한 개 하기",
-                        "habit_id": 6
-                    },
-                    "count": {
-                        "completed_count": 2,
-                        "not_completed_count": 1
-                    }
-                }
-            """
-            val jsonObject = JSONObject(dummyJson)
-            val habit = jsonObject.getJSONObject("habit")
-            val count = jsonObject.getJSONObject("count")
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val response = connection.inputStream.bufferedReader().use { it.readText() }
+                val jsonObject = JSONObject(response)
 
-            category = habit.getString("category")
-            contents = habit.getString("contents")
-            completedCount = count.getInt("completed_count")
-            notCompletedCount = count.getInt("not_completed_count")
+                val randomHabit = jsonObject.getJSONObject("random_habit")
+                category = jsonObject.getString("category")
+                contents = randomHabit.getString("content")
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
