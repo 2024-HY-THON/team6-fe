@@ -18,3 +18,12 @@ data class CategoryResponse(
 data class DetailResponse(
     val contents: List<String>?,
 )
+
+data class CategoryRequest(
+    val category: String
+)
+
+data class CategoryAddResponse(
+    val message: String,
+    val category: CategoryResponse,
+)

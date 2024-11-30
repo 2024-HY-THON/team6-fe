@@ -157,7 +157,7 @@ fun ListScreen() {
                                                 }
                                             )
                                         } else {
-                                            AddCategoryCard()
+                                            AddCategoryDialog(selectedId, selectedName)
                                         }
                                     }
                                 }
