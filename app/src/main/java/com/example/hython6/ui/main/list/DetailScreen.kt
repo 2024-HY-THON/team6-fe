@@ -1,6 +1,7 @@
 package com.example.hython6.ui.main.list
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,19 +22,42 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hython6.R
+import com.example.hython6.data.RetrofitClient
+import com.example.hython6.data.remote.ListApiService
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DetailScreen(categoryName: String?) {
+fun DetailScreen(categoryId: Int, categoryName: String?) {
+    val listApiService: ListApiService = RetrofitClient.getRetrofit().create(ListApiService::class.java)
+
+    var habits by remember { mutableStateOf<List<String>?>(null) }
+    LaunchedEffect(key1 = Unit){
+        kotlin.runCatching {
+            Log.d("CategoryResponse", "categoryId: $categoryId")
+            listApiService.getDetail(userId = "test1",categoryId = categoryId)  // 테스트용 사용장 ID 1
+        }.onSuccess { response ->
+            habits = response.contents
+            Log.d("CategoryResponse", "habits: $habits")
+        }.onFailure { throwable ->
+            Log.e("CategoryResponse", "Error fetching habits: ${throwable.message}")
+        }
+    }
+
     Scaffold(
         topBar = { },
         content = {
@@ -116,11 +140,18 @@ fun DetailScreen(categoryName: String?) {
                     ),
                     verticalArrangement = Arrangement.spacedBy(10.dp) //아이템 간 상하 간격
                 ) {
-                    items(15 + 1) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                        if(index < 15)
-                            RecommendationCard("recommend $index")
-                        else
-                            RecommendationCard(recommend = "+")
+                    habits?.let { list ->
+                        items(list.size + 1) { index -> // habits 리스트 크기와 추가 버튼
+                            if (index < list.size)
+                                RecommendationCard(recommend = list[index]) // habits의 아이템 사용
+                            else
+                                RecommendationCard(recommend = "+") // 추가 버튼
+                        }
+                    } ?: run {
+                        // habits가 null인 경우 보여줄 내용을 작성
+                        items(1) {
+                            Text("No data available", Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                        }
                     }
                 }
             }

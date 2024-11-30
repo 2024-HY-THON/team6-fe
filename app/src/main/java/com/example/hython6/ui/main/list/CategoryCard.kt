@@ -27,11 +27,12 @@ import com.example.hython6.R
 
 @Composable
 fun CategoryCard(
+    categoryId: Int,
     categoryName: String,
     alarm: Boolean,
     isEditing: Boolean,
     navController: NavController,
-    onClick: (String) -> Unit,
+    onClick: (Int, String) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -40,7 +41,7 @@ fun CategoryCard(
             .fillMaxWidth()
             .clickable {
                 navController.navigate("detail")
-                onClick(categoryName)
+                onClick(categoryId, categoryName)
             }
             .padding(vertical = 4.dp, horizontal = 4.dp),
         colors = CardDefaults.cardColors(

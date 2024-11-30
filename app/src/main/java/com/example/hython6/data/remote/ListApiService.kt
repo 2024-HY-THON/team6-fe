@@ -9,4 +9,10 @@ interface ListApiService {
     suspend fun getAllCategory(
         @Path("user_id") userId: String,
     ): List<CategoryResponse>
+
+    @GET("/category/content/{user_id}/{category_id}")
+    suspend fun getDetail(
+        @Path("user_id") userId: String,
+        @Path("category_id") categoryId: Int,
+    ): DetailResponse
 }

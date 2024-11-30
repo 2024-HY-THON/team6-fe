@@ -70,7 +70,8 @@ fun ListScreen() {
     val interactionSource = remember { MutableInteractionSource() }
     var isEditing by remember { mutableStateOf(false) }
     var showMode by remember { mutableIntStateOf(1) }   // 1: 카테고리, 2: 검색 결과
-    var clickedItem by remember { mutableStateOf("") }
+    var selectedId by remember { mutableStateOf<Int?>(null) }
+    var selectedName by remember { mutableStateOf("") }
 
     var isKeyboardVisible = remember {  // 키보드 상태 변수
         mutableStateOf(false)
@@ -141,12 +142,17 @@ fun ListScreen() {
                                     items(categoryList.size) { index ->
                                         val category = categoryList[index]
                                         CategoryCard(
+                                            categoryId = category.categoryId,
                                             categoryName = category.category, // 서버에서 받은 category 값
                                             alarm = category.choose, // 서버에서 받은 choose 값
                                             isEditing = isEditing,
                                             navController,
-                                            onClick = { clickedCategory ->
-                                                clickedItem = clickedCategory
+                                            onClick = { clickedId, clickedCategory ->
+                                                Log.d("Category", "Clicked ID: $clickedId, Clicked Name: $clickedCategory")
+                                                selectedId = clickedId
+                                                selectedName = clickedCategory
+                                                Log.d("Category", "selectedId: $selectedId")
+                                                Log.d("Category", "selectedName: $selectedName")
                                             }
                                         )
                                     }
@@ -170,7 +176,7 @@ fun ListScreen() {
 
                     }
                 }
-                composable("detail") { DetailScreen(categoryName = clickedItem) }
+                composable("detail") { DetailScreen(categoryId = selectedId!!, categoryName = selectedName) }
             }
 
         }

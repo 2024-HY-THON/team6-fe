@@ -14,3 +14,7 @@ data class CategoryResponse(
     val alarmTime: String?,
     val randomHabit: Long?
 )
+
+data class DetailResponse(
+    val contents: List<String>?,
+)
