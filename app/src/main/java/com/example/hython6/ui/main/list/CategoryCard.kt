@@ -27,7 +27,8 @@ import com.example.hython6.R
 
 @Composable
 fun CategoryCard(
-    category: String,
+    categoryName: String,
+    alarm: Boolean,
     isEditing: Boolean,
     navController: NavController,
     onClick: (String) -> Unit,
@@ -39,7 +40,7 @@ fun CategoryCard(
             .fillMaxWidth()
             .clickable {
                 navController.navigate("detail")
-                onClick(category)
+                onClick(categoryName)
             }
             .padding(vertical = 4.dp, horizontal = 4.dp),
         colors = CardDefaults.cardColors(
@@ -53,7 +54,7 @@ fun CategoryCard(
         ) {
             // 중앙에 텍스트 배치
             Text(
-                text = category,
+                text = categoryName,
                 modifier = Modifier
                     .align(Alignment.Center),
                 style = TextStyle(fontSize = 16.sp, color = Color.Black),
