@@ -28,9 +28,7 @@ import coil.compose.rememberImagePainter
 import com.example.hython6.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import java.net.HttpURLConnection
-import java.net.URL
+import org.json.JSONObject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -40,6 +38,8 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     var completedCount by remember { mutableStateOf(0) }
     var notCompletedCount by remember { mutableStateOf(0) }
+    var category by remember { mutableStateOf("") }
+    var contents by remember { mutableStateOf("") }
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     val userId = sharedPreferences.getString("userId", "") ?: ""
@@ -49,19 +49,46 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
         appBarTitleSetter("안해도 돼")
 
         try {
-            val url = URL("$serverUrl/category/main/$userId")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.connect()
+            // val url = URL("$serverUrl/category/main/$userId")
+            // val connection = url.openConnection() as HttpURLConnection
+            // connection.requestMethod = "GET"
+            // connection.connect()
 
-            val responseCode = connection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val response = connection.inputStream.bufferedReader().use { it.readText() }
-                val jsonArray = JSONArray(response)
-                val summary = jsonArray.getJSONObject(jsonArray.length() - 1)
-                completedCount = summary.getInt("completed_count")
-                notCompletedCount = summary.getInt("not_completed_count")
-            }
+            // val responseCode = connection.responseCode
+            // if (responseCode == HttpURLConnection.HTTP_OK) {
+            //     val response = connection.inputStream.bufferedReader().use { it.readText() }
+            //     val jsonObject = JSONObject(response)
+            //     val habit = jsonObject.getJSONObject("habit")
+            //     val count = jsonObject.getJSONObject("count")
+
+            //     category = habit.getString("category")
+            //     contents = habit.getString("contents")
+            //     completedCount = count.getInt("completed_count")
+            //     notCompletedCount = count.getInt("not_completed_count")
+            // }
+
+            // Dummy JSON data
+            val dummyJson = """
+                {
+                    "habit": {
+                        "category": "운동",
+                        "contents": "푸시업 한 개 하기",
+                        "habit_id": 6
+                    },
+                    "count": {
+                        "completed_count": 2,
+                        "not_completed_count": 1
+                    }
+                }
+            """
+            val jsonObject = JSONObject(dummyJson)
+            val habit = jsonObject.getJSONObject("habit")
+            val count = jsonObject.getJSONObject("count")
+
+            category = habit.getString("category")
+            contents = habit.getString("contents")
+            completedCount = count.getInt("completed_count")
+            notCompletedCount = count.getInt("not_completed_count")
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -168,7 +195,7 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "건강 관리",
+                            text = category,
                             style = TextStyle(
                                 fontSize = 15.sp,
                                 lineHeight = 40.sp,
@@ -194,7 +221,7 @@ fun HomeScreen(appBarTitleSetter: (String) -> Unit) {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("건강 관리 내용")
+                        Text(contents)
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))

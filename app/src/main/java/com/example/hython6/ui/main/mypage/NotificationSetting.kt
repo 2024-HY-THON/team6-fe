@@ -1,62 +1,63 @@
 package com.example.hython6.ui.main.mypage
 
-import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+
 @Composable
-@Preview
 fun NotificationSetting() {
+    val amPmOptions = listOf("오전", "오후")
+    val hours = (1..12).toList()
+    val minutes = (0..59).toList()
+
+    var selectedAmPm by remember { mutableStateOf(amPmOptions[0]) }
+    var selectedHour by remember { mutableStateOf(hours[0]) }
+    var selectedMinute by remember { mutableStateOf(minutes[0]) }
+    val context = LocalContext.current
+
+    var showDialog by remember { mutableStateOf(false) }
+
     Scaffold(
-        containerColor = Color.White,
-    ) {
+        containerColor = Color.White
+    ) { contentPadding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(contentPadding)  // contentPadding 사용
                 .padding(top = 15.dp),
             color = Color.White,
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = "랜덤은 아침, 점심, 저녁 중으로 가장 적합한 때에 랜덤으로 발송돼요 :)",
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        lineHeight = 20.sp,
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF8E8E8E),
-                    )
-                )
-                Box(
+                Row(
                     modifier = Modifier
-                        .padding(top = 10.dp)
                         .fillMaxWidth()
-                        .height(60.dp)
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFFE8E8E8),
-                            shape = RoundedCornerShape(size = 10.dp)
-                        ),
-                    contentAlignment = Alignment.CenterStart
+                        .padding(bottom = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -82,12 +83,92 @@ fun NotificationSetting() {
                                 modifier = Modifier.padding(start = 8.dp)
                             )
                         }
-                        Button(onClick = { /* TODO: Add your action here */ }) {
+                        Button(onClick = { showDialog = true }) {
                             Text(text = "랜덤")
                         }
                     }
                 }
             }
+        }
+    }
+
+    if (showDialog) {
+        Dialog(
+            onDismissRequest = { showDialog = false },
+            properties = DialogProperties(dismissOnClickOutside = true)
+        ) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                    ) {
+                        TimeDial(
+                            options = amPmOptions,
+                            selectedOption = selectedAmPm,
+                            onOptionSelected = { selectedAmPm = it }
+                        )
+                        TimeDial(
+                            options = hours,
+                            selectedOption = selectedHour,
+                            onOptionSelected = { selectedHour = it }
+                        )
+                        TimeDial(
+                            options = minutes,
+                            selectedOption = selectedMinute,
+                            onOptionSelected = { selectedMinute = it }
+                        )
+
+                    }
+                    Button(onClick = {
+                        showDialog = false
+                        val selectedTime = "${selectedAmPm} ${selectedHour}시 ${selectedMinute}분"
+                        Toast.makeText(context, "알림 시간: $selectedTime", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Text("확인")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun <T> TimeDial(
+    options: List<T>,
+    selectedOption: T,
+    onOptionSelected: (T) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .width(80.dp)
+            .height(200.dp)
+            .border(1.dp, Color.Gray, RoundedCornerShape(10.dp))
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        items(options) { option ->
+            Text(
+                text = option.toString(),
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = if (option == selectedOption) FontWeight.Bold else FontWeight.Normal,
+                    color = if (option == selectedOption) Color.Black else Color.Gray
+                ),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable { onOptionSelected(option) }
+            )
         }
     }
 }
