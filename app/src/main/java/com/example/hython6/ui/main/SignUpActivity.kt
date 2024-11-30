@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -194,6 +195,8 @@ fun requestSignUp(context: Context, serverUrl: String, userId: String, email: St
                 putString("userToken", accessToken)
                 apply()
             }
+
+            Toast.makeText(context, "회원가입이 성공적으로 완료되었습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 }
