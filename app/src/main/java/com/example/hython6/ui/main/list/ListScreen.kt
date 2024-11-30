@@ -2,6 +2,7 @@ package com.example.hython6.ui.main.list
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import androidx.activity.compose.BackHandler
@@ -34,6 +35,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -50,6 +52,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.hython6.data.RetrofitClient.getRetrofit
+import com.example.hython6.data.remote.CategoryResponse
+import com.example.hython6.data.remote.ListApiService
 import com.example.hython6.ui.theme.Blue
 import com.example.hython6.ui.theme.Gray2
 import com.example.hython6.ui.theme.White
@@ -57,84 +65,124 @@ import com.example.hython6.ui.theme.White
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ListScreen() {
+    val listApiService: ListApiService = getRetrofit().create(ListApiService::class.java)
+    val navController = rememberNavController()
     val interactionSource = remember { MutableInteractionSource() }
     var isEditing by remember { mutableStateOf(false) }
     var showMode by remember { mutableIntStateOf(1) }   // 1: 카테고리, 2: 검색 결과
+    var selectedId by remember { mutableStateOf<Int?>(null) }
+    var selectedName by remember { mutableStateOf("") }
 
     var isKeyboardVisible = remember {  // 키보드 상태 변수
         mutableStateOf(false)
     }
     keyBoardVisible(isKeyboardVisible)
 
+    var categories by remember { mutableStateOf<List<CategoryResponse>?>(null) }
+    LaunchedEffect(key1 = Unit){
+        kotlin.runCatching {
+            listApiService.getAllCategory("test1") // 테스트용 사용자 ID
+        }.onSuccess { allCategory ->
+            Log.d("CategoryResponse", "Categories: $allCategory")
+            categories = allCategory
+        }.onFailure { throwable ->
+            Log.e("CategoryResponse", "Error fetching categories: ${throwable.message}")
+            // 필요 시 에러 처리 로직 추가
+        }
+    }
+
     Scaffold (
         topBar = {
         },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-            ){
-                // 검색바
-                SearchBar(showMode) { newShowMode ->
-                    showMode = newShowMode // showMode 값 변경
-                }
-
-                // 카테고리 편집 버튼
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ){
-                    Text(
-                        text = if (isEditing) "확인" else "목록 편집",
-                        style = TextStyle(
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight(600),
-                            color = Color.Black,
-                        ),
+            NavHost(navController, startDestination = "list"){
+                composable("list"){
+                    Column(
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                            ) { isEditing = !isEditing }
-                            .padding(end = 20.dp)
-                    )
-                }
+                            .fillMaxSize(),
+                    ){
+                        // 검색바
+                        SearchBar(showMode) { newShowMode ->
+                            showMode = newShowMode // showMode 값 변경
+                        }
 
-                if (showMode == 1) {
-                    // 카테고리 리스트
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            horizontal = 15.dp,
-                            vertical = 8.dp
-                        ),
-                    ) {
-                        items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                            CategoryCard(
-                                category = "Category $index",
-                                isEditing = isEditing,
+                        // 카테고리 편집 버튼
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ){
+                            Text(
+                                text = if (isEditing) "확인" else "목록 편집",
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight(600),
+                                    color = Color.Black,
+                                ),
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .clickable(
+                                        interactionSource = interactionSource,
+                                        indication = null,
+                                    ) { isEditing = !isEditing }
+                                    .padding(end = 20.dp)
                             )
                         }
-                    }
-                } else {
-                    // 검색 결과 리스트
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            horizontal = 15.dp,
-                            vertical = 8.dp
-                        ),
-                    ) {
-                        items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
-                            SearchResCard("검색결과 $index", "사용자 $index")
+
+                        if (showMode == 1) {
+                            // 카테고리 리스트
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    horizontal = 15.dp,
+                                    vertical = 8.dp
+                                ),
+                            ) {
+                                categories?.let { categoryList ->
+                                    items(categoryList.size + 1) { index ->
+                                        if (index < categoryList.size) {
+                                            val category = categoryList[index]
+                                            CategoryCard(
+                                                categoryId = category.category_id,
+                                                categoryName = category.category, // 서버에서 받은 category 값
+                                                alarm = category.choose, // 서버에서 받은 choose 값
+                                                isEditing = isEditing,
+                                                navController,
+                                                onClick = { clickedId, clickedCategory ->
+                                                    Log.d("Category", "Clicked ID: $clickedId, Clicked Name: $clickedCategory")
+                                                    selectedId = clickedId
+                                                    selectedName = clickedCategory
+                                                    Log.d("Category", "selectedId: $selectedId")
+                                                    Log.d("Category", "selectedName: $selectedName")
+                                                }
+                                            )
+                                        } else {
+                                            AddCategoryCard()
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            // 검색 결과 리스트
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(1),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    horizontal = 15.dp,
+                                    vertical = 8.dp
+                                ),
+                            ) {
+                                items(15) { index -> // 15는 예시로 고정된 개수, 실제 데이터로 수정 예정
+                                    SearchResCard("검색결과 $index", "사용자 $index")
+                                }
+                            }
                         }
+
                     }
                 }
-
+                composable("detail") { DetailScreen(categoryId = selectedId!!, categoryName = selectedName) }
             }
+
         }
     )
 }

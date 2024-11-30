@@ -9,15 +9,18 @@ import android.os.StrictMode.ThreadPolicy
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +49,7 @@ class LoginActivity : ComponentActivity() {
 @Composable
 fun LoginScreen() {
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     var userId by remember { mutableStateOf(sharedPreferences.getString("userId", "") ?: "") }
     var password by remember { mutableStateOf(sharedPreferences.getString("userPw", "") ?: "") }
@@ -66,7 +70,9 @@ fun LoginScreen() {
             Button(
                 onClick = {
                     requestLogin(context, serverUrl, userId, password)
-                    val intent = Intent(context, MainActivity::class.java)
+                    val intent = Intent(context, MainActivity::class.java).apply{
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                     context.startActivity(intent)
                     with(sharedPreferences.edit()) {
                         putString("userId", userId)
@@ -100,7 +106,17 @@ fun LoginScreen() {
             TextField(
                 value = userId,
                 onValueChange = { userId = it },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next // 'Next'로 설정하여 다음 필드로 이동
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // 엔터를 눌렀을 때 키보드 숨기기
+                        keyboardController?.hide()
+                    }
+                )
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -114,8 +130,16 @@ fun LoginScreen() {
                 value = password,
                 onValueChange = { password = it },
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth()
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done // 'Done'으로 설정하여 완료 시 키보드 숨기기
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
             )
         }
     }
